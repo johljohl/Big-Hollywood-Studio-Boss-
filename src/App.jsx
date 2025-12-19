@@ -23,10 +23,17 @@ import {
   Gavel,
   BarChart3,
   Activity,
+  UserCheck,
+  UserX,
+  Calendar,
+  Clock,
+  Scissors,
+  CheckCircle,
+  Plus,
 } from "lucide-react";
 
 // --- SAVE SYSTEM ---
-const SAVE_KEY = "hollywood_ultimate_v7";
+const SAVE_KEY = "hollywood_ultimate_v16_graphics";
 
 // --- SAFE MATH UTILS ---
 const safeNum = (val) => {
@@ -39,7 +46,7 @@ const FormatMoney = ({ amount }) => {
   const formatted = Math.floor(val).toLocaleString();
   return (
     <span
-      className={`font-mono tracking-tight ${
+      className={`font-mono tracking-tight font-bold ${
         val < 0 ? "text-red-400" : "text-emerald-400"
       }`}
     >
@@ -48,43 +55,45 @@ const FormatMoney = ({ amount }) => {
   );
 };
 
+// --- ENHANCED UI COMPONENTS ---
+
 const StatBar = ({ label, value, max = 100, color = "bg-blue-500" }) => (
   <div className="w-full group">
-    <div className="flex justify-between text-xs text-slate-400 mb-1.5 font-medium tracking-wide">
-      <span className="group-hover:text-white transition-colors">{label}</span>
-      <span>{safeNum(value).toFixed(1)}</span>
+    <div className="flex justify-between text-xs text-slate-400 mb-1.5 font-medium tracking-wide uppercase">
+      <span className="group-hover:text-white transition-colors duration-300">
+        {label}
+      </span>
+      <span className="font-mono text-white">{safeNum(value).toFixed(1)}</span>
     </div>
-    <div className="h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800/50">
+    <div className="h-2 bg-slate-950/50 rounded-full overflow-hidden border border-white/5 backdrop-blur-sm">
       <div
-        className={`h-full ${color} shadow-[0_0_10px_currentColor] transition-all duration-1000 ease-out opacity-80 group-hover:opacity-100`}
+        className={`h-full ${color} shadow-[0_0_12px_currentColor] transition-all duration-1000 ease-out`}
         style={{ width: `${Math.min(100, (safeNum(value) / max) * 100)}%` }}
       />
     </div>
   </div>
 );
 
-// --- ENHANCED UI COMPONENTS ---
-
 const Card = ({ children, className = "", onClick, selected, disabled }) => (
   <div
     onClick={!disabled ? onClick : undefined}
     className={`
-      relative overflow-hidden rounded-xl p-5 border transition-all duration-300 group
+      relative overflow-hidden rounded-2xl p-5 border transition-all duration-300 group
       ${
         disabled
-          ? "opacity-50 cursor-not-allowed border-slate-800 bg-slate-900/50"
-          : "cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-yellow-900/10 hover:border-slate-500"
+          ? "opacity-50 cursor-not-allowed border-slate-800 bg-slate-900/20"
+          : "cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:shadow-yellow-500/10 hover:border-slate-500/50"
       }
       ${
         selected
-          ? "border-yellow-500/80 bg-slate-800/80 shadow-[0_0_20px_rgba(234,179,8,0.15)] ring-1 ring-yellow-500/50"
-          : "border-slate-700/40 bg-slate-800/40 backdrop-blur-sm"
+          ? "border-yellow-500/80 bg-slate-800/80 shadow-[0_0_25px_rgba(234,179,8,0.1)] ring-1 ring-yellow-500/50"
+          : "border-white/5 bg-slate-800/40 backdrop-blur-md"
       } 
       ${className}
     `}
   >
     {selected && (
-      <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-yellow-500/20 to-transparent -mr-6 -mt-6 rounded-bl-full" />
+      <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-yellow-500/20 via-yellow-500/5 to-transparent -mr-8 -mt-8 rounded-bl-full" />
     )}
     {children}
   </div>
@@ -99,9 +108,9 @@ const Button = ({
 }) => {
   const variants = {
     primary:
-      "bg-gradient-to-r from-yellow-600 to-yellow-500 text-black shadow-lg shadow-yellow-900/20 hover:from-yellow-500 hover:to-yellow-400 hover:shadow-yellow-500/30 border-t border-white/20",
+      "bg-gradient-to-r from-yellow-600 to-yellow-500 text-black shadow-lg shadow-yellow-900/20 hover:from-yellow-500 hover:to-yellow-400 hover:shadow-yellow-500/40 border-t border-white/20",
     secondary:
-      "bg-slate-700/80 text-white border border-slate-600 hover:bg-slate-600 hover:border-slate-500 hover:text-white shadow-lg shadow-black/20",
+      "bg-slate-800/50 text-white border border-white/10 hover:bg-slate-700/50 hover:border-white/20 hover:text-white shadow-lg backdrop-blur-sm",
     danger:
       "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-900/20 hover:from-red-500 hover:to-red-400 border-t border-white/10",
     success:
@@ -113,7 +122,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        px-6 py-3 rounded-lg font-bold text-sm tracking-wide uppercase transition-all duration-200 active:scale-95 flex items-center justify-center gap-2
+        px-6 py-3 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-200 active:scale-95 flex items-center justify-center gap-2
         ${variants[variant]} 
         ${disabled ? "opacity-50 grayscale cursor-not-allowed" : ""} 
         ${className}
@@ -127,15 +136,15 @@ const Button = ({
 const Modal = ({ title, children, onClose, isOpen }) => {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-slate-900/95 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative ring-1 ring-white/10">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="bg-slate-900 border border-white/10 rounded-3xl max-w-lg w-full p-8 shadow-2xl relative ring-1 ring-white/5 animate-in zoom-in-95 duration-300">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-full text-slate-500 hover:text-white hover:bg-white/10 transition-colors"
         >
           <X size={20} />
         </button>
-        <h2 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 border-b border-slate-800 pb-4">
+        <h2 className="text-2xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 uppercase tracking-tight">
           {title}
         </h2>
         {children}
@@ -251,7 +260,6 @@ const REAL_STUDIOS = [
   { name: "A24", share: 4, color: "bg-slate-200 text-black" },
 ];
 
-// --- REAL TALENT LISTS ---
 const REAL_DIRECTORS_LIST = [
   "Steven Spielberg",
   "Christopher Nolan",
@@ -318,6 +326,29 @@ const REAL_ACTORS_LIST = [
   "Henry Cavill",
 ];
 
+const RANDOM_EVENTS = [
+  {
+    title: "Skandal!",
+    text: "Din huvudrollsinnehavare greps för fortkörning. Dålig press men bra publicitet?",
+    effect: (m) => ({ ...m, hype: m.hype + 15, quality: m.quality - 10 }),
+  },
+  {
+    title: "Viral Succé",
+    text: "Trailern blev en meme på TikTok.",
+    effect: (m) => ({ ...m, hype: m.hype + 20 }),
+  },
+  {
+    title: "Strejk",
+    text: "Manusförfattarna strejkar. Produktionen blev dyrare.",
+    effect: (m) => ({ ...m, budgetProd: m.budgetProd * 1.2 }),
+  },
+  {
+    title: "Tekniskt Genombrott",
+    text: "Ditt team hittade ett billigare sätt att göra explosioner.",
+    effect: (m) => ({ ...m, budgetProd: m.budgetProd * 0.8 }),
+  },
+];
+
 const uid = () => Math.random().toString(36).substring(2, 9);
 
 const generateTalent = (role, level, hasScouts) => {
@@ -333,15 +364,11 @@ const generateTalent = (role, level, hasScouts) => {
       "James",
       "Mary",
       "Robert",
-      "Patricia",
       "John",
       "Jennifer",
       "Michael",
       "Linda",
       "David",
-      "Elizabeth",
-      "William",
-      "Barbara",
     ];
     const lastNames = [
       "Smith",
@@ -351,11 +378,6 @@ const generateTalent = (role, level, hasScouts) => {
       "Jones",
       "Garcia",
       "Miller",
-      "Davis",
-      "Rodriguez",
-      "Martinez",
-      "Hernandez",
-      "Lopez",
     ];
     name = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${
       lastNames[Math.floor(Math.random() * lastNames.length)]
@@ -376,30 +398,8 @@ const generateTalent = (role, level, hasScouts) => {
 };
 
 const generateScript = () => {
-  const adjectives = [
-    "Dark",
-    "Last",
-    "Hidden",
-    "Silent",
-    "Lost",
-    "Infinite",
-    "Broken",
-    "Eternal",
-    "Neon",
-    "Velvet",
-  ];
-  const nouns = [
-    "Kingdom",
-    "Horizon",
-    "Empire",
-    "Protocol",
-    "Dream",
-    "Night",
-    "Shadow",
-    "Legacy",
-    "Storm",
-    "City",
-  ];
+  const adjectives = ["Dark", "Last", "Hidden", "Silent", "Lost", "Infinite"];
+  const nouns = ["Kingdom", "Horizon", "Empire", "Protocol", "Dream", "Night"];
   const title = `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${
     nouns[Math.floor(Math.random() * nouns.length)]
   }`;
@@ -423,7 +423,11 @@ export default function HollywoodTycoon() {
   const [franchises, setFranchises] = useState([]);
   const [competitors, setCompetitors] = useState([]);
 
-  // Game State
+  // New: Active Projects List
+  const [activeProjects, setActiveProjects] = useState([]);
+  const [turnReport, setTurnReport] = useState([]); // Logs for the month
+
+  // Game State (Wizard)
   const [currentMovie, setCurrentMovie] = useState(null);
   const [talentPool, setTalentPool] = useState({
     directors: [],
@@ -435,6 +439,9 @@ export default function HollywoodTycoon() {
   const [modal, setModal] = useState(null);
   const [saveExists, setSaveExists] = useState(false);
   const [biddingWar, setBiddingWar] = useState(null);
+  const [sequelPrompt, setSequelPrompt] = useState(null);
+  const [showAwards, setShowAwards] = useState(null);
+  const [activeEvent, setActiveEvent] = useState(null);
 
   useEffect(() => {
     try {
@@ -466,6 +473,7 @@ export default function HollywoodTycoon() {
               share: s.share + (Math.random() * 2 - 1),
             }))
         );
+        setActiveProjects(d.activeProjects || []);
         setPhase("dashboard");
       } else {
         clearData();
@@ -486,6 +494,7 @@ export default function HollywoodTycoon() {
       upgrades,
       franchises,
       competitors,
+      activeProjects,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
     setSaveExists(true);
@@ -499,6 +508,7 @@ export default function HollywoodTycoon() {
     setHistory([]);
     setUpgrades([]);
     setFranchises([]);
+    setActiveProjects([]);
     setCompetitors(
       REAL_STUDIOS.map((s) => ({
         ...s,
@@ -508,13 +518,65 @@ export default function HollywoodTycoon() {
     setPhase("dashboard");
   };
 
-  // --- LOGIC ---
+  // --- TIME & PRODUCTION LOGIC ---
 
-  const initProject = (franchiseId = null, sourceMovie = null) => {
+  const advanceTurn = () => {
+    let newReport = [];
+    let updatedProjects = activeProjects.map((p) => {
+      let updated = { ...p };
+
+      updated.progress += 1;
+
+      const team = [p.director, p.writer, ...p.cast].filter(Boolean);
+      let conflict = team.reduce((s, m) => s + m.trait.conflict, 0);
+
+      if (Math.random() < 0.2) {
+        if (Math.random() * 20 < conflict) {
+          updated.quality -= 5;
+          newReport.push(`⚠️ ${p.title}: Konflikt i teamet sänkte kvaliteten.`);
+        } else {
+          updated.quality += 2;
+          newReport.push(`✨ ${p.title}: Bra framsteg denna månad.`);
+        }
+      }
+
+      if (updated.stage === "pre-production" && updated.progress >= 2) {
+        updated.stage = "production";
+        updated.progress = 0;
+        newReport.push(`🎬 ${p.title} har börjat spelas in.`);
+      } else if (updated.stage === "production" && updated.progress >= 4) {
+        updated.stage = "post-production";
+        updated.progress = 0;
+        newReport.push(`✂️ ${p.title} har gått in i klipprummet.`);
+      } else if (updated.stage === "post-production" && updated.progress >= 3) {
+        updated.stage = "finished";
+        newReport.push(`✅ ${p.title} är klar för premiär!`);
+      }
+
+      return updated;
+    });
+
+    if (loan > 0) {
+      const interest = Math.floor(loan * 0.01);
+      setMoney((m) => m - interest);
+      newReport.push(
+        `💸 Betalade ${FormatMoney({ amount: interest })} i ränta.`
+      );
+    }
+
+    setTurn((t) => t + 1);
+    setActiveProjects(updatedProjects);
+    setTurnReport(newReport);
+    setModal("report");
+    saveGame();
+  };
+
+  const startNewProjectWizard = (franchiseId = null, sourceMovie = null) => {
     let title = "";
     let genre = null;
     let sequelNum = 1;
     let hypeBonus = 0;
+    let sourceData = null;
 
     if (franchiseId) {
       const franchise = franchises.find((f) => f.id === franchiseId);
@@ -523,21 +585,24 @@ export default function HollywoodTycoon() {
         genre = franchise.genre;
         sequelNum = franchise.movies.length + 1;
         hypeBonus = 20;
+        if (franchise.movies && franchise.movies.length > 0)
+          sourceData = franchise.movies[franchise.movies.length - 1];
       }
     } else if (sourceMovie) {
       sequelNum = (sourceMovie.sequelNumber || 1) + 1;
       title = `${sourceMovie.title.replace(/\s\d+$/, "")} ${sequelNum}`;
       genre = sourceMovie.genre;
       hypeBonus = 15;
+      sourceData = sourceMovie;
     }
 
     const movie = {
       id: uid(),
-      title: title,
-      genre: genre,
+      title,
+      genre,
       franchiseId,
       isSequel: !!sourceMovie || !!franchiseId,
-      sequelNumber: sequelNum,
+      sequelNum,
       director: null,
       writer: null,
       cast: [],
@@ -569,7 +634,63 @@ export default function HollywoodTycoon() {
       ),
     });
 
+    if (sourceData) {
+      const returnees = [];
+      const successFactor = sourceData.profit > 0 ? 1.5 : 0.8;
+      const baseWillingness = sourceData.profit > 0 ? 0.9 : 0.5;
+
+      if (sourceData.director && Math.random() < baseWillingness) {
+        returnees.push({
+          ...sourceData.director,
+          id: uid(),
+          salary: Math.floor(sourceData.director.salary * successFactor),
+          roleLabel: "Regissör",
+          type: "director",
+          selected: true,
+        });
+      }
+      if (sourceData.cast) {
+        sourceData.cast.forEach((actor) => {
+          if (Math.random() < baseWillingness) {
+            returnees.push({
+              ...actor,
+              id: uid(),
+              salary: Math.floor(actor.salary * successFactor),
+              roleLabel: "Skådespelare",
+              type: "actor",
+              selected: true,
+            });
+          }
+        });
+      }
+      if (returnees.length > 0) {
+        setSequelPrompt({ movie, returnees });
+        return;
+      }
+    }
     setPhase(franchiseId || sourceMovie ? "casting" : "development");
+  };
+
+  const confirmSequelCast = () => {
+    const { movie, returnees } = sequelPrompt;
+    const updatedMovie = { ...movie };
+    returnees.forEach((p) => {
+      if (p.selected) {
+        if (p.type === "director") updatedMovie.director = p;
+        else if (updatedMovie.cast.length < 6) updatedMovie.cast.push(p);
+      }
+    });
+    setCurrentMovie(updatedMovie);
+    setSequelPrompt(null);
+    setPhase("casting");
+  };
+  const toggleReturnee = (id) => {
+    setSequelPrompt({
+      ...sequelPrompt,
+      returnees: sequelPrompt.returnees.map((p) =>
+        p.id === id ? { ...p, selected: !p.selected } : p
+      ),
+    });
   };
 
   const attemptHire = (talent, type) => {
@@ -589,10 +710,10 @@ export default function HollywoodTycoon() {
       }
     }
 
-    // Updated limit to 6
     if (!isDirector && currentMovie.cast.length >= 6)
       return alert("Max 6 skådespelare.");
 
+    // AI Competition / Bidding
     if (talent.isReal || talent.fame > 70) {
       if (Math.random() < 0.3) {
         const rival = competitors[
@@ -600,6 +721,7 @@ export default function HollywoodTycoon() {
         ] || { name: "Rival Studio" };
         const bidFactor = 1.3 + Math.random() * 0.5;
         const newSalary = Math.floor(talent.salary * bidFactor);
+
         setBiddingWar({
           talent,
           type,
@@ -614,15 +736,11 @@ export default function HollywoodTycoon() {
   };
 
   const confirmHire = (talent, type, salary) => {
-    const hiredTalent = { ...talent, salary };
-    if (type === "director") {
-      setCurrentMovie({ ...currentMovie, director: hiredTalent });
-    } else {
-      setCurrentMovie({
-        ...currentMovie,
-        cast: [...currentMovie.cast, hiredTalent],
-      });
-    }
+    const hired = { ...talent, salary };
+    if (type === "director")
+      setCurrentMovie({ ...currentMovie, director: hired });
+    else
+      setCurrentMovie({ ...currentMovie, cast: [...currentMovie.cast, hired] });
     setBiddingWar(null);
   };
 
@@ -641,9 +759,18 @@ export default function HollywoodTycoon() {
     setBiddingWar(null);
   };
 
-  const runProduction = () => {
-    if (!currentMovie) return;
+  const toggleActor = (actor) => {
+    const exists = currentMovie.cast.find((a) => a.id === actor.id);
+    if (exists)
+      setCurrentMovie({
+        ...currentMovie,
+        cast: currentMovie.cast.filter((a) => a.id !== actor.id),
+      });
+    else if (currentMovie.cast.length < 6)
+      setCurrentMovie({ ...currentMovie, cast: [...currentMovie.cast, actor] });
+  };
 
+  const startProduction = () => {
     let cost =
       currentMovie.budgetProd +
       currentMovie.budgetMkt +
@@ -654,86 +781,75 @@ export default function HollywoodTycoon() {
       ...currentMovie.cast,
     ].filter(Boolean);
     cost += team.reduce((sum, p) => sum + p.salary, 0);
-
     setMoney((m) => m - cost);
 
     let quality = 50 + (currentMovie.scriptBonus || 0);
     if (currentMovie.director) quality += currentMovie.director.skill / 10;
-
-    if (currentMovie.cast.length > 0) {
-      const castSkill =
-        currentMovie.cast.reduce((sum, a) => sum + a.skill, 0) /
-        currentMovie.cast.length;
-      quality += castSkill / 5;
-    }
-
+    if (currentMovie.cast.length > 0)
+      quality +=
+        currentMovie.cast.reduce((s, a) => s + a.skill, 0) /
+        currentMovie.cast.length /
+        5;
     quality += currentMovie.budgetProd / 2000000;
     if (currentMovie.isSequel) quality *= 0.9;
 
-    const logs = [];
-    let conflict = 0;
-    team.forEach((p) => (conflict += p.trait.conflict));
-
-    if (Math.random() * 30 < conflict) {
-      logs.push("⚠️ Konflikt på inspelningen sänkte kvaliteten.");
-      quality -= 10;
-    } else {
-      logs.push("✅ Inspelningen gick bra.");
-    }
-
     let hype = currentMovie.hype + 10 + currentMovie.budgetMkt / 500000;
     team.forEach((p) => (hype += p.fame / 10));
-    team.forEach((p) => {
-      if (p.isReal) hype += 5;
-    });
 
-    const finishedMovie = {
+    const newProject = {
       ...currentMovie,
       quality: Math.min(100, Math.max(10, Math.floor(quality))),
       hype: Math.min(100, Math.max(5, Math.floor(hype))),
       totalCost: cost,
-      logs,
+      stage: "pre-production", // Start phase
+      progress: 0,
     };
 
-    setCurrentMovie(finishedMovie);
+    setActiveProjects([...activeProjects, newProject]);
+    setPhase("dashboard");
+  };
+
+  const releaseMovie = (project) => {
+    setCurrentMovie({
+      ...project,
+      finalLogs: [
+        `Produktionen är klar! Kvalitet: ${project.quality}%`,
+        `Hype inför premiären: ${project.hype}`,
+      ],
+    });
+
+    if (Math.random() < 0.25) {
+      const event =
+        RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+      setActiveEvent(event);
+    } else {
+      setActiveEvent(null);
+    }
+
     setPhase("release");
+    setActiveProjects(activeProjects.filter((p) => p.id !== project.id));
   };
 
   const finishRelease = (results) => {
     const revenue = results.revenue + results.merch;
     const profit = revenue - currentMovie.totalCost;
-
     setMoney((m) => m + revenue);
 
     let shareDelta = 0;
     if (currentMovie.quality > 80) shareDelta = 1.5;
     else if (currentMovie.quality < 40) shareDelta = -0.5;
     if (profit > 10000000) shareDelta += 1.0;
-
-    const newShare = Math.min(
-      100,
-      Math.max(0.1, safeNum(marketShare) + shareDelta)
+    setMarketShare((s) =>
+      Math.min(100, Math.max(0.1, safeNum(s) + shareDelta))
     );
-    const change = newShare - safeNum(marketShare);
-    setMarketShare(newShare);
-
-    const newCompetitors = competitors.map((c) => ({
-      ...c,
-      share: Math.max(
-        0.1,
-        c.share - change / competitors.length + (Math.random() * 0.5 - 0.25)
-      ),
-    }));
-    setCompetitors(newCompetitors);
 
     const record = {
       ...currentMovie,
       revenue,
       profit,
-      year: 2024 + Math.floor(turn / 4),
+      year: 2024 + Math.floor(turn / 12),
     };
     setHistory([...history, record]);
-    setTurn((t) => t + 1);
 
     if (
       !currentMovie.franchiseId &&
@@ -760,6 +876,16 @@ export default function HollywoodTycoon() {
       );
     }
 
+    // Competitor Logic
+    const newCompetitors = competitors.map((c) => ({
+      ...c,
+      share: Math.max(
+        0.1,
+        c.share - shareDelta / competitors.length + (Math.random() * 0.5 - 0.25)
+      ),
+    }));
+    setCompetitors(newCompetitors);
+
     saveGame();
     if (money + profit < -10000000) setPhase("gameover");
     else setPhase("dashboard");
@@ -768,20 +894,19 @@ export default function HollywoodTycoon() {
   // --- RENDERERS ---
 
   const Header = () => (
-    <div className="bg-slate-950 p-4 border-b border-slate-800 sticky top-0 z-20 backdrop-blur-md bg-slate-950/90">
+    <div className="bg-slate-950/80 backdrop-blur-md border-b border-white/10 p-4 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto flex justify-between items-center text-white">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-lg shadow-lg flex items-center justify-center font-black text-black text-xl border border-yellow-400/50">
             {studioName.charAt(0)}
           </div>
           <div>
-            <h1 className="font-bold text-lg leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+            <h1 className="font-bold text-lg leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 uppercase">
               {studioName}
             </h1>
             <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-              <span>ÅR {Math.floor((safeNum(turn) - 1) / 4) + 2024}</span>
-              <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
-              <span>Q{((safeNum(turn) - 1) % 4) + 1}</span>
+              <Calendar size={12} />
+              <span>Månad {turn}</span>
             </div>
           </div>
         </div>
@@ -806,24 +931,20 @@ export default function HollywoodTycoon() {
     </div>
   );
 
-  if (phase === "menu") {
+  if (phase === "menu")
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-        <div className="max-w-md w-full bg-slate-900/50 backdrop-blur-xl p-10 rounded-3xl text-center shadow-2xl border border-slate-800/50 ring-1 ring-white/5">
-          <div className="mb-8 relative inline-block">
+        <div className="max-w-md w-full bg-slate-900/50 backdrop-blur-xl p-10 rounded-3xl text-center shadow-2xl border border-white/10 ring-1 ring-white/5">
+          <div className="mb-6 relative inline-block">
             <Clapperboard size={64} className="text-yellow-500 relative z-10" />
-            <div className="absolute inset-0 bg-yellow-500/30 blur-xl"></div>
+            <div className="absolute inset-0 bg-yellow-500/20 blur-xl"></div>
           </div>
           <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 mb-2 tracking-tighter">
             HOLLYWOOD
             <br />
             TYCOON
           </h1>
-          <p className="text-slate-400 mb-10 text-lg font-light">
-            Bygg imperiet. Skapa stjärnorna.
-          </p>
-
-          <div className="space-y-4">
+          <div className="space-y-4 mt-8">
             {saveExists && (
               <Button
                 onClick={loadGame}
@@ -842,32 +963,90 @@ export default function HollywoodTycoon() {
             <Button onClick={startGame} className="w-full py-4 text-lg">
               Starta Ny Studio
             </Button>
-
-            <div className="pt-8 mt-4 border-t border-slate-800/50">
-              <button
-                onClick={clearData}
-                className="text-xs text-slate-600 hover:text-red-400 flex items-center justify-center gap-2 mx-auto transition-colors"
-              >
-                <Trash size={12} /> Återställ Data (Vid problem)
-              </button>
-            </div>
+            <button
+              onClick={clearData}
+              className="text-xs text-slate-600 hover:text-red-400 flex items-center justify-center gap-2 mx-auto pt-4 transition-colors"
+            >
+              <Trash size={12} /> Återställ Data
+            </button>
           </div>
         </div>
       </div>
     );
-  }
 
-  if (phase === "dashboard") {
+  if (phase === "dashboard")
     return (
       <div className="min-h-screen bg-slate-900 text-white bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-800/30 via-slate-900 to-slate-950">
         <Header />
+        <Modal isOpen={!!sequelPrompt} onClose={() => {}} title="Förhandlingar">
+          {sequelPrompt && (
+            <div className="space-y-4">
+              <div className="text-sm text-slate-400">
+                Förra filmen var en succé! Stjärnorna vill ha högre lön för att
+                återvända.
+              </div>
+              {sequelPrompt.returnees.map((p) => (
+                <div
+                  key={p.id}
+                  onClick={() => toggleReturnee(p.id)}
+                  className={`flex justify-between items-center p-3 rounded-lg border cursor-pointer transition-all ${
+                    p.selected
+                      ? "bg-green-900/20 border-green-500/50"
+                      : "bg-slate-950 border-slate-800 opacity-60"
+                  }`}
+                >
+                  <div>
+                    {p.name} ({p.roleLabel})
+                  </div>
+                  <div className="text-yellow-400">
+                    <FormatMoney amount={p.salary} />
+                  </div>
+                </div>
+              ))}
+              <div className="flex gap-3 mt-4">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => {
+                    setSequelPrompt(null);
+                    setPhase("casting");
+                  }}
+                >
+                  Avböj Alla
+                </Button>
+                <Button className="flex-1" onClick={confirmSequelCast}>
+                  Acceptera
+                </Button>
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {modal === "report" && (
+          <Modal
+            title={`Månadsrapport: Månad ${turn - 1}`}
+            isOpen={true}
+            onClose={() => setModal(null)}
+          >
+            <div className="space-y-2 max-h-60 overflow-y-auto font-mono text-sm">
+              {turnReport.map((l, i) => (
+                <div
+                  key={i}
+                  className="p-2 bg-slate-800/50 rounded border border-white/5"
+                >
+                  {l}
+                </div>
+              ))}
+            </div>
+          </Modal>
+        )}
         {modal === "bank" && (
           <Modal
             title="Finansiell Översikt"
             isOpen={true}
             onClose={() => setModal(null)}
           >
-            <div className="space-y-6 text-center">
+            <div className="text-center space-y-6">
               <div className="p-6 bg-slate-950 rounded-xl border border-slate-800">
                 <div className="text-sm text-slate-400 uppercase tracking-widest mb-2">
                   Aktuellt Lån
@@ -887,9 +1066,8 @@ export default function HollywoodTycoon() {
                   Låna $5M
                 </Button>
                 <Button
-                  variant="secondary"
                   className="w-full"
-                  disabled={loan <= 0}
+                  variant="secondary"
                   onClick={() => {
                     if (money >= 5000000) {
                       setMoney((m) => m - 5000000);
@@ -911,9 +1089,9 @@ export default function HollywoodTycoon() {
           >
             <div className="space-y-3 max-h-[60vh] overflow-y-auto">
               {franchises.length === 0 ? (
-                <div className="text-center py-10 text-slate-500">
-                  Inga franchiser skapade än.
-                </div>
+                <p className="text-slate-500 text-center py-8">
+                  Inga franchiser än.
+                </p>
               ) : (
                 franchises.map((f) => (
                   <div
@@ -921,17 +1099,17 @@ export default function HollywoodTycoon() {
                     className="bg-slate-950 p-4 rounded-xl border border-slate-800 flex justify-between items-center group hover:border-slate-600 transition-colors"
                   >
                     <div>
-                      <div className="font-bold text-lg text-purple-300 group-hover:text-purple-200">
+                      <div className="font-bold text-lg text-purple-300">
                         {f.name}
                       </div>
                       <div className="text-xs text-slate-500 font-mono">
-                        {f.movies.length} släppta titlar
+                        {f.movies.length} filmer
                       </div>
                     </div>
                     <Button
                       className="text-xs py-2 px-4"
                       onClick={() => {
-                        initProject(f.id);
+                        startNewProjectWizard(f.id);
                         setModal(null);
                       }}
                     >
@@ -944,22 +1122,20 @@ export default function HollywoodTycoon() {
           </Modal>
         )}
 
-        <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            {/* Main Action Card */}
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-2xl border border-slate-700/50 shadow-2xl relative overflow-hidden group">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-2xl border border-white/10 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl group-hover:bg-yellow-500/20 transition-all duration-1000"></div>
               <div className="relative z-10 flex justify-between items-center">
                 <div>
                   <h2 className="text-3xl font-bold text-white mb-2">
                     Produktionskontor
                   </h2>
-                  <p className="text-slate-400 text-sm mb-6 max-w-md">
-                    Marknaden väntar på nästa storfilm. Välj strategi och
-                    dominera box office.
-                  </p>
-                  <div className="flex gap-3">
-                    <Button onClick={() => initProject()} className="px-8">
+                  <div className="flex gap-3 mt-6">
+                    <Button
+                      onClick={() => startNewProjectWizard()}
+                      className="px-8"
+                    >
                       <Clapperboard size={18} className="mr-2" /> Nytt Projekt
                     </Button>
                     <Button
@@ -970,31 +1146,105 @@ export default function HollywoodTycoon() {
                     </Button>
                   </div>
                 </div>
-                <div className="hidden sm:block text-slate-700">
-                  <Film size={120} strokeWidth={0.5} />
-                </div>
               </div>
             </div>
 
-            <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-2xl border border-slate-700/50">
+            <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-2xl border border-white/5">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="font-bold text-lg flex items-center gap-2">
+                  <Film size={18} className="text-slate-400" /> Pågående
+                  Produktioner
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {activeProjects.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500 bg-slate-900/50 rounded-xl border border-dashed border-slate-800">
+                    Inga aktiva projekt.
+                  </div>
+                ) : (
+                  activeProjects.map((p) => (
+                    <div
+                      key={p.id}
+                      className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex justify-between items-center"
+                    >
+                      <div>
+                        <div className="font-bold text-white">{p.title}</div>
+                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+                          {p.stage === "pre-production" && (
+                            <span className="text-yellow-400">
+                              Förproduktion
+                            </span>
+                          )}
+                          {p.stage === "production" && (
+                            <span className="text-red-400">Inspelning</span>
+                          )}
+                          {p.stage === "post-production" && (
+                            <span className="text-blue-400">Efterarbete</span>
+                          )}
+                          {p.stage === "finished" && (
+                            <span className="text-green-400">Klar!</span>
+                          )}
+                        </div>
+                      </div>
+                      {p.stage === "finished" ? (
+                        <Button
+                          onClick={() => releaseMovie(p)}
+                          variant="success"
+                          className="py-2 px-4 text-xs"
+                        >
+                          PREMIÄR
+                        </Button>
+                      ) : (
+                        <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-blue-500"
+                            style={{
+                              width: `${
+                                (p.progress /
+                                  (p.stage === "production"
+                                    ? 4
+                                    : p.stage === "post-production"
+                                    ? 3
+                                    : 2)) *
+                                100
+                              }%`,
+                            }}
+                          ></div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                onClick={advanceTurn}
+                className="py-4 px-8 text-lg bg-indigo-600 hover:bg-indigo-500 shadow-indigo-900/30 text-white"
+              >
+                <Clock className="mr-2" /> Nästa Månad
+              </Button>
+            </div>
+
+            <div className="bg-slate-800/50 backdrop-blur-sm p-6 rounded-2xl border border-white/5">
               <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
-                <Activity size={18} className="text-slate-400" /> Senaste
-                Produktioner
+                <Activity size={18} className="text-slate-400" /> Senaste Släpp
               </h3>
               <div className="space-y-3">
                 {history
-                  .slice(-5)
+                  .slice(-3)
                   .reverse()
                   .map((m) => (
                     <div
                       key={m.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900/80 rounded-xl border border-slate-800 hover:border-slate-600 transition-all group"
+                      className="flex justify-between items-center p-3 bg-slate-900/80 rounded-xl border border-slate-800"
                     >
-                      <div className="mb-2 sm:mb-0">
-                        <div className="font-bold text-lg text-slate-200 group-hover:text-white transition-colors">
+                      <div>
+                        <div className="font-bold text-slate-200">
                           {m.title}
                         </div>
-                        <div className="text-xs text-slate-500 font-mono uppercase tracking-wider">
+                        <div className="text-xs text-slate-500">
                           {m.genre.name} •{" "}
                           <span
                             className={
@@ -1003,22 +1253,21 @@ export default function HollywoodTycoon() {
                                 : "text-yellow-500"
                             }
                           >
-                            {m.quality}% Kvalitet
+                            {m.quality}%
                           </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <div
-                          className={`text-lg font-mono font-bold ${
+                          className={`font-mono font-bold ${
                             m.profit > 0 ? "text-emerald-400" : "text-red-400"
                           }`}
                         >
-                          {m.profit > 0 ? "+" : ""}
                           <FormatMoney amount={m.profit} />
                         </div>
                         {m.profit > 0 && (
                           <button
-                            onClick={() => initProject(null, m)}
+                            onClick={() => startNewProjectWizard(null, m)}
                             className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 transition-colors"
                           >
                             Uppföljare
@@ -1027,19 +1276,13 @@ export default function HollywoodTycoon() {
                       </div>
                     </div>
                   ))}
-                {history.length === 0 && (
-                  <div className="text-center py-12 text-slate-600 italic border-2 border-dashed border-slate-800 rounded-xl">
-                    Inga filmer producerade än.
-                  </div>
-                )}
               </div>
             </div>
           </div>
-
           <div className="space-y-6">
-            <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50">
+            <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
               <h3 className="font-bold text-slate-200 mb-6 flex items-center gap-2">
-                <BarChart3 size={18} /> Marknad & Konkurrens
+                <BarChart3 size={18} /> Marknadsandelar
               </h3>
               <div className="mb-6">
                 <StatBar
@@ -1050,7 +1293,7 @@ export default function HollywoodTycoon() {
               </div>
               <div className="space-y-3">
                 {competitors
-                  .sort((a, b) => b.share - a.share)
+                  .sort((a, b) => safeNum(b.share) - safeNum(a.share))
                   .map((s) => (
                     <div
                       key={s.name}
@@ -1073,8 +1316,7 @@ export default function HollywoodTycoon() {
                   ))}
               </div>
             </div>
-
-            <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50">
+            <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
               <h3 className="font-bold text-slate-200 mb-6 flex items-center gap-2">
                 <Zap size={18} /> Uppgraderingar
               </h3>
@@ -1120,12 +1362,17 @@ export default function HollywoodTycoon() {
         </div>
       </div>
     );
-  }
 
+  // --- WIZARD PHASES ---
   if (phase === "development") {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
-        <Header />
+        <Header
+          studioName={studioName}
+          turn={turn}
+          money={money}
+          marketShare={marketShare}
+        />
         <div className="max-w-5xl mx-auto p-6 animate-in slide-in-from-bottom-4 duration-500">
           <div className="mb-8 flex items-center justify-between">
             <div>
@@ -1142,15 +1389,14 @@ export default function HollywoodTycoon() {
               <div className="w-12 h-1 bg-slate-800 rounded-full"></div>
             </div>
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50">
+              <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5">
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                   Filmtitel
                 </label>
                 <input
-                  className="w-full bg-slate-950 p-4 rounded-xl text-white border border-slate-800 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none text-lg font-medium transition-all"
+                  className="w-full bg-slate-950 p-4 rounded-xl text-white border border-slate-800 focus:border-yellow-500 outline-none text-lg font-medium transition-all"
                   value={currentMovie.title}
                   onChange={(e) =>
                     setCurrentMovie({ ...currentMovie, title: e.target.value })
@@ -1158,7 +1404,6 @@ export default function HollywoodTycoon() {
                   placeholder="Ange titel..."
                 />
               </div>
-
               <div
                 className={`grid grid-cols-2 sm:grid-cols-3 gap-3 ${
                   currentMovie.isSequel
@@ -1196,7 +1441,6 @@ export default function HollywoodTycoon() {
                 </div>
               )}
             </div>
-
             <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 h-fit shadow-xl">
               <div className="flex p-1 bg-slate-900 rounded-lg mb-6">
                 <button
@@ -1220,12 +1464,8 @@ export default function HollywoodTycoon() {
                   Köp Premium
                 </button>
               </div>
-
               {scriptMode === "write" ? (
                 <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
-                    Tillgängliga Författare
-                  </h4>
                   {talentPool.writers.map((w) => (
                     <div
                       key={w.id}
@@ -1293,7 +1533,6 @@ export default function HollywoodTycoon() {
               )}
             </div>
           </div>
-
           <div className="flex justify-between mt-8 pt-6 border-t border-slate-800">
             <Button variant="secondary" onClick={() => setPhase("dashboard")}>
               Avbryt Projekt
@@ -1320,7 +1559,12 @@ export default function HollywoodTycoon() {
       .reduce((s, p) => s + p.salary, 0);
     return (
       <div className="min-h-screen bg-slate-900 text-white">
-        <Header />
+        <Header
+          studioName={studioName}
+          turn={turn}
+          money={money}
+          marketShare={marketShare}
+        />
         <Modal isOpen={!!biddingWar} onClose={() => {}} title="BUDGIVNINGSKRIG">
           {biddingWar && (
             <div className="space-y-6">
@@ -1410,9 +1654,7 @@ export default function HollywoodTycoon() {
               </div>
             </div>
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left Column: Selection Pools */}
             <div className="lg:col-span-8 space-y-8">
               <div>
                 <h4 className="font-bold text-slate-400 mb-3 flex items-center gap-2">
@@ -1452,7 +1694,6 @@ export default function HollywoodTycoon() {
                   ))}
                 </div>
               </div>
-
               <div>
                 <h4 className="font-bold text-slate-400 mb-3 flex items-center gap-2">
                   <Users size={16} /> Skådespelare
@@ -1504,14 +1745,11 @@ export default function HollywoodTycoon() {
                 </div>
               </div>
             </div>
-
-            {/* Right Column: Selected Cast */}
             <div className="lg:col-span-4 space-y-6">
               <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 sticky top-24 shadow-2xl">
                 <h3 className="font-bold text-lg mb-4 text-white border-b border-slate-700 pb-2">
                   Rollbesättning ({currentMovie.cast.length}/6)
                 </h3>
-
                 <div className="space-y-4">
                   <div>
                     <div className="text-xs text-slate-500 uppercase font-bold mb-2">
@@ -1544,7 +1782,6 @@ export default function HollywoodTycoon() {
                       </div>
                     )}
                   </div>
-
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <div className="text-xs text-slate-500 uppercase font-bold">
@@ -1589,7 +1826,6 @@ export default function HollywoodTycoon() {
               </div>
             </div>
           </div>
-
           <div className="flex justify-between mt-12 pt-6 border-t border-slate-800">
             <Button variant="secondary" onClick={() => setPhase("development")}>
               Tillbaka
@@ -1621,10 +1857,14 @@ export default function HollywoodTycoon() {
       currentMovie.budgetProd +
       currentMovie.budgetMkt +
       currentMovie.budgetMerch;
-
     return (
       <div className="min-h-screen bg-slate-900 text-white">
-        <Header />
+        <Header
+          studioName={studioName}
+          turn={turn}
+          money={money}
+          marketShare={marketShare}
+        />
         <div className="max-w-4xl mx-auto p-6 animate-in slide-in-from-bottom-4 duration-500">
           <div className="mb-8 flex items-center justify-between">
             <div>
@@ -1641,7 +1881,6 @@ export default function HollywoodTycoon() {
               <div className="w-12 h-1 bg-yellow-500 rounded-full"></div>
             </div>
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6">
               <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700">
@@ -1759,7 +1998,6 @@ export default function HollywoodTycoon() {
                   </div>
                 </div>
               </div>
-
               <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800 shadow-inner">
                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">
                   Kostnadsöversikt
@@ -1814,7 +2052,7 @@ export default function HollywoodTycoon() {
             </Button>
             <Button
               disabled={total > money}
-              onClick={runProduction}
+              onClick={startProduction}
               className="text-lg px-8 py-4 shadow-yellow-500/20"
             >
               STARTA PRODUKTIONEN
@@ -1825,19 +2063,20 @@ export default function HollywoodTycoon() {
     );
   }
 
-  if (phase === "release") {
+  if (phase === "release")
     return (
       <ReleaseScreen
         currentMovie={currentMovie}
         studioName={studioName}
         onFinish={finishRelease}
+        activeEvent={activeEvent}
+        onEventClose={() => setActiveEvent(null)}
       />
     );
-  }
 
   if (phase === "gameover")
     return (
-      <div className="min-h-screen bg-red-950 text-white flex flex-col items-center justify-center p-8 text-center">
+      <div className="min-h-screen bg-red-900 text-white flex flex-col items-center justify-center p-8 text-center">
         <h1 className="text-8xl font-black mb-4 opacity-50">KONKURS</h1>
         <p className="text-2xl mb-8 font-light text-red-200">
           Studion har slut på kapital. Drömmen är över.
@@ -1855,8 +2094,14 @@ export default function HollywoodTycoon() {
   );
 }
 
-// --- SUB-COMPONENT: RELEASE SCREEN WITH CREDITS ---
-const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
+// --- SUB-COMPONENT: RELEASE SCREEN WITH CREDITS (FIXED CRASH) ---
+const ReleaseScreen = ({
+  currentMovie,
+  studioName,
+  onFinish,
+  activeEvent,
+  onEventClose,
+}) => {
   const [viewState, setViewState] = useState("credits");
   const [creditIndex, setCreditIndex] = useState(0);
   const [results, setResults] = useState(null);
@@ -1886,6 +2131,7 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
     setResults({ revenue, merch });
   }, [currentMovie]);
 
+  // FIX: Generate credits safely
   const credits = [];
   if (currentMovie) {
     credits.push({
@@ -1904,7 +2150,7 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
   }
 
   useEffect(() => {
-    if (viewState === "credits") {
+    if (viewState === "credits" && !activeEvent) {
       if (creditIndex < credits.length) {
         const timer = setTimeout(
           () => setCreditIndex((prev) => prev + 1),
@@ -1916,7 +2162,7 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
         return () => clearTimeout(timer);
       }
     }
-  }, [viewState, creditIndex, credits.length]);
+  }, [viewState, creditIndex, credits.length, activeEvent]);
 
   if (!currentMovie || !results)
     return (
@@ -1924,6 +2170,24 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
         Förbereder premiär...
       </div>
     );
+
+  if (activeEvent) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="bg-slate-800 p-8 rounded-2xl max-w-md w-full border border-yellow-500/50 shadow-2xl text-center space-y-4">
+          <AlertCircle size={48} className="text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white">{activeEvent.title}</h2>
+          <p className="text-slate-300">{activeEvent.text}</p>
+          <div className="bg-slate-900 p-2 rounded text-xs text-yellow-400">
+            Effekt har applicerats på filmen.
+          </div>
+          <Button onClick={onEventClose} className="w-full">
+            OK
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (viewState === "credits") {
     if (creditIndex >= credits.length)
@@ -1963,7 +2227,6 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
     );
   }
 
-  // Result Screen
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 bg-[url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-blend-multiply">
       <div className="max-w-3xl w-full text-center space-y-10 animate-in zoom-in duration-500 backdrop-blur-xl bg-black/60 p-12 rounded-3xl border border-white/10 shadow-2xl">
@@ -1975,7 +2238,6 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
             {currentMovie.title}
           </h1>
         </div>
-
         <div className="grid grid-cols-2 gap-8 md:gap-12 border-y border-white/10 py-8">
           <div>
             <div className="text-slate-400 uppercase text-xs font-bold tracking-wider mb-2">
@@ -2002,7 +2264,6 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
             </div>
           </div>
         </div>
-
         <div className="space-y-2">
           <div className="text-slate-400 uppercase text-sm font-bold tracking-wider">
             Totala Intäkter
@@ -2016,7 +2277,6 @@ const ReleaseScreen = ({ currentMovie, studioName, onFinish }) => {
             </div>
           )}
         </div>
-
         <div className="pt-8">
           <Button
             onClick={() => onFinish(results)}
